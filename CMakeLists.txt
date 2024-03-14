@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
+cmake_policy(SET CMP0074 OLD)
 project(enrico Fortran C CXX)
 
 #===============================================================================
@@ -71,7 +72,18 @@ endif ()
 # =============================================================================
 # Check for SCALE (optional)
 # =============================================================================
-find_package(SCALE PATHS ${SCALE_DIR} COMPONENTS Shift OmnibusDriver Tpetra)
+if (Trilinos_DIR)
+  find_package(Trilinos PATHS ${Trilinos_DIR} COMPONENTS Tpetra)
+else()
+  find_package(Trilinos PATHS ${SCALE_DIR} COMPONENTS Tpetra)
+endif ()
+
+if (Trilinos_FOUND)
+  MESSAGE(STATUS "Trilinos Found!")
+  MESSAGE(STATUS "Trilinos_DIR = ${Trilinos_DIR}")
+endif ()
+
+find_package(SCALE PATHS ${SCALE_DIR} COMPONENTS Shift OmnibusDriver)
 
 if (SCALE_FOUND)
     MESSAGE(STATUS "SCALE found!")
@@ -143,6 +155,11 @@ include_directories(
         src/
         ${CMAKE_BINARY_DIR}
         ${CMAKE_BINARY_DIR}/include)
+
+if (Trilinos_FOUND)
+    include_directories(${Trilinos_INCLUDE_DIRS})
+    include_directories(${Trilinos_TPL_INCLUDE_DIRS})
+endif ()
 
 if (SCALE_FOUND)
     include_directories(${SCALE_INCLUDE_DIRS})
@@ -226,6 +243,10 @@ if (USE_NEK5000)
 elseif (USE_NEKRS)
     target_compile_definitions(libenrico PUBLIC USE_NEKRS)
     list(APPEND LIBRARIES nekrs-lib)
+endif ()
+
+if (Trilinos_FOUND)
+    list(APPEND LIBRARIES ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES})
 endif ()
 
 if (SCALE_FOUND)
