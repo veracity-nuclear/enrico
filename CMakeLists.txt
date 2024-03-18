@@ -83,7 +83,7 @@ if (Trilinos_FOUND)
   MESSAGE(STATUS "Trilinos_DIR = ${Trilinos_DIR}")
 endif ()
 
-find_package(SCALE PATHS ${SCALE_DIR} COMPONENTS Shift OmnibusDriver)
+find_package(SCALE PATHS ${SCALE_DIR} COMPONENTS nemesis ampx geometria omnibus shift)
 
 if (SCALE_FOUND)
     MESSAGE(STATUS "SCALE found!")
