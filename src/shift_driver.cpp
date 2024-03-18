@@ -73,7 +73,8 @@ std::vector<CellHandle> ShiftDriver::find(const std::vector<Position>& positions
 
   for (const auto& r : positions) {
     // Find geometric cell and corresponding material
-    cell_type cell = geometry_->find_cell({r.x, r.y, r.z});
+    geometria::Space_Vector vec = {r.x, r.y, r.z};
+    cell_type cell = geometry_->find_cell(vec);
 
     // If this cell hasn't been saved yet, add it to cells_ and
     // keep track of what index it corresponds to
