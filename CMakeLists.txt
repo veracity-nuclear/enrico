@@ -279,14 +279,14 @@ target_link_libraries(test_openmc_singlerod PUBLIC libenrico)
 add_executable(test_openmc_split_comm tests/singlerod/short/openmc_heat_surrogate/test_openmc_split_comm.cpp)
 target_link_libraries(test_openmc_split_comm PUBLIC libenrico)
 
-# Ensure C++14 standard is used
+# Ensure C++17 standard is used
 set_target_properties(
         enrico libenrico
         comm_split_demo
         heat_xfer
         iapws
         test_openmc_singlerod
-        PROPERTIES CXX_STANDARD 14 CXX_EXTENSIONS OFF)
+        PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 
 
 if (USE_NEK5000)
@@ -294,7 +294,7 @@ if (USE_NEK5000)
     target_link_libraries(test_nek5000_singlerod PUBLIC libenrico)
     set_target_properties(
             test_nek5000_singlerod
-            PROPERTIES CXX_STANDARD 14 CXX_EXTENSIONS OFF)
+            PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 endif ()
 
 # =============================================================================
@@ -307,7 +307,7 @@ add_executable(unittests
   tests/unit/catch.cpp
   tests/unit/test_surrogate_th.cpp)
 target_link_libraries(unittests PUBLIC Catch ${LIBPUGIXML} libenrico)
-set_target_properties(unittests PROPERTIES CXX_STANDARD 14 CXX_EXTENSIONS OFF)
+set_target_properties(unittests PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 
 #################################################################################
 # Install targets
