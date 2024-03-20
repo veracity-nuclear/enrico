@@ -2,15 +2,3 @@
 	path = vendor/openmc
 	url = https://github.com/openmc-dev/openmc
 	branch = develop
-[submodule "vendor/nek5000"]
-	path = vendor/nek5000
-	url = https://github.com/enrico-dev/Nek5000.git
-	branch = enrico
-[submodule "vendor/catch"]
-	path = vendor/catch
-	url = https://github.com/catchorg/Catch2.git
-	branch = master
-[submodule "vendor/nekRS"]
-	path = vendor/nekRS
-	url = https://github.com/Nek5000/nekRS.git
-	branch = master
