@@ -6,7 +6,7 @@
 
 #include <pugixml.hpp>
 
-#include "Geometria/rtk/RTK_Geometry.hh"         // for Geometry
+#include "Geometria/core/Geometry.hh"         // for Geometry
 #include "Omnibus/driver/Multiphysics_Driver.hh" // for MultiPhysics_Driver
 #include "Shift/mc_physics/SCE_Physics.hh"
 #include "Teuchos_ParameterList.hpp" // for ParameterList
@@ -104,7 +104,7 @@ public:
 
 private:
   // Data members
-  std::shared_ptr<geometria::RTK_Core> geometry_;        //!< Core model
+  std::shared_ptr<geometria::Geometry> geometry_;        //!< Core model
   std::shared_ptr<omnibus::Multiphysics_Driver> driver_; //!< Multiphysics driver
 
   Teuchos::RCP<Teuchos::ParameterList> plist_; //!< parameter list from input file

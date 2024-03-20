@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.12)
+cmake_policy(SET CMP0074 OLD)
 project(enrico Fortran C CXX)
 
 #===============================================================================
@@ -71,7 +72,18 @@ endif ()
 # =============================================================================
 # Check for SCALE (optional)
 # =============================================================================
-find_package(SCALE PATHS ${SCALE_DIR} COMPONENTS Shift OmnibusDriver Tpetra)
+if (Trilinos_DIR)
+  find_package(Trilinos PATHS ${Trilinos_DIR} COMPONENTS Tpetra)
+else()
+  find_package(Trilinos PATHS ${SCALE_DIR} COMPONENTS Tpetra)
+endif ()
+
+if (Trilinos_FOUND)
+  MESSAGE(STATUS "Trilinos Found!")
+  MESSAGE(STATUS "Trilinos_DIR = ${Trilinos_DIR}")
+endif ()
+
+find_package(SCALE PATHS ${SCALE_DIR} COMPONENTS nemesis ampx geometria omnibus shift)
 
 if (SCALE_FOUND)
     MESSAGE(STATUS "SCALE found!")
@@ -143,6 +155,11 @@ include_directories(
         src/
         ${CMAKE_BINARY_DIR}
         ${CMAKE_BINARY_DIR}/include)
+
+if (Trilinos_FOUND)
+    include_directories(${Trilinos_INCLUDE_DIRS})
+    include_directories(${Trilinos_TPL_INCLUDE_DIRS})
+endif ()
 
 if (SCALE_FOUND)
     include_directories(${SCALE_INCLUDE_DIRS})
@@ -228,6 +245,10 @@ elseif (USE_NEKRS)
     list(APPEND LIBRARIES nekrs-lib)
 endif ()
 
+if (Trilinos_FOUND)
+    list(APPEND LIBRARIES ${Trilinos_LIBRARIES} ${Trilinos_TPL_LIBRARIES})
+endif ()
+
 if (SCALE_FOUND)
     target_compile_definitions(libenrico PRIVATE USE_SHIFT)
     list(APPEND LIBRARIES ${SCALE_LIBRARIES} ${SCALE_TPL_LIBRARIES})
@@ -258,14 +279,14 @@ target_link_libraries(test_openmc_singlerod PUBLIC libenrico)
 add_executable(test_openmc_split_comm tests/singlerod/short/openmc_heat_surrogate/test_openmc_split_comm.cpp)
 target_link_libraries(test_openmc_split_comm PUBLIC libenrico)
 
-# Ensure C++14 standard is used
+# Ensure C++17 standard is used
 set_target_properties(
         enrico libenrico
         comm_split_demo
         heat_xfer
         iapws
         test_openmc_singlerod
-        PROPERTIES CXX_STANDARD 14 CXX_EXTENSIONS OFF)
+        PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 
 
 if (USE_NEK5000)
@@ -273,7 +294,7 @@ if (USE_NEK5000)
     target_link_libraries(test_nek5000_singlerod PUBLIC libenrico)
     set_target_properties(
             test_nek5000_singlerod
-            PROPERTIES CXX_STANDARD 14 CXX_EXTENSIONS OFF)
+            PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 endif ()
 
 # =============================================================================
@@ -286,7 +307,7 @@ add_executable(unittests
   tests/unit/catch.cpp
   tests/unit/test_surrogate_th.cpp)
 target_link_libraries(unittests PUBLIC Catch ${LIBPUGIXML} libenrico)
-set_target_properties(unittests PROPERTIES CXX_STANDARD 14 CXX_EXTENSIONS OFF)
+set_target_properties(unittests PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 
 #################################################################################
 # Install targets

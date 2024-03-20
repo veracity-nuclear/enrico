@@ -174,7 +174,7 @@ void CoupledDriver::init_comms(const pugi::xml_node& node)
     neutronics_driver_ = std::make_unique<OpenmcDriver>(neutronics_comm.comm);
   } else if (neut_driver == "shift") {
 #ifdef USE_SHIFT
-    neutronics_driver_ = std::make_unique<ShiftDriver>(comm, neut_node);
+    neutronics_driver_ = std::make_unique<ShiftDriver>(neutronics_comm.comm, neut_node);
 #else
     throw std::runtime_error{"ENRICO has not been built with Shift support enabled."};
 #endif
