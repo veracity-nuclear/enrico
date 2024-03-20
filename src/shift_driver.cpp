@@ -2,9 +2,11 @@
 
 #include <gsl/gsl-lite.hpp> // for Expects
 
+#include "Nemesis/comm/Functions.hh"
 #include "Omnibus/driver/Sequence_Shift.hh" // for Sequence_Shift
 #include "Shift/mc_tallies/Cell_Union_Tally.hh"
 #include "Teuchos_DefaultMpiComm.hpp"          // for MpiComm
+#include "Teuchos_ParameterList.hpp"
 #include "Teuchos_XMLParameterListHelpers.hpp" // for RCP, ParameterList
 
 #include <unordered_map>
@@ -44,9 +46,7 @@ ShiftDriver::ShiftDriver(MPI_Comm comm, pugi::xml_node node)
     driver_ = std::make_shared<omnibus::Multiphysics_Driver>(problem);
 
     // Store geometry
-    auto problem_geom = problem->geometry();
-    Expects(problem_geom != nullptr);
-    geometry_ = std::dynamic_pointer_cast<geometria::RTK_Core>(problem_geom);
+    geometry_ = problem->geometry();
     Expects(geometry_ != nullptr);
 
     // Initialize number of cells
@@ -107,10 +107,10 @@ void ShiftDriver::create_tallies()
 
   // Create an array of cells -- note that all cells are used here, not just
   // ones that map to a TH element
-  Array<std::string> cells(geometry_->num_cells());
-  for (int cellid = 0; cellid < geometry_->num_cells(); ++cellid)
-    cells[cellid] = std::to_string(cellid);
-  Array<int> counts(geometry_->num_cells(), 1);
+  Array<std::string> cells(cells_.size());
+  for (int cellid = 0; cellid < cells_.size(); ++cellid)
+    cells[cellid] = geometry_->cell_to_label(cells_[cellid]);
+  Array<int> counts(cells_.size(), 1);
   power_pl->set("union_cells", cells);
   power_pl->set("union_lengths", counts);
 }
@@ -208,7 +208,7 @@ xt::xtensor<double, 1> ShiftDriver::heat_source(double power) const
 
 std::string ShiftDriver::cell_label(CellHandle handle) const
 {
-  return std::to_string(cells_.at(handle));
+  return geometry_->cell_to_label(cells_.at(handle));
 }
 
 gsl::index ShiftDriver::cell_index(CellHandle cell) const
